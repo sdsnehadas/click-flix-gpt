@@ -1,11 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Header from "./Header";
+import checkValidData from "../utils/validate";
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword ,signInWithEmailAndPassword} from "firebase/auth";
 
 const Login = () => {
-  const [isSignIn , setisSignIn] = useState(true);
-  const handleSignup = () =>{
-    setisSignIn(!isSignIn)
-  }
+  const [isSignIn, setisSignIn] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const email = useRef(null);
+  const password = useRef(null);
+  const fullName = useRef(null);
+
+  const handleSignup = () => {
+    setisSignIn(!isSignIn);
+    setErrorMessage(" ");
+  };
+  const signInClicked = () => {
+    if (!isSignIn && !fullName.current.value) {
+      setErrorMessage("Name is required");
+    } else if (isSignIn) {
+      setErrorMessage(
+        checkValidData(email.current.value, password.current.value)
+      );
+    }
+    //if (errorMessage!==" ") return;
+    if (!isSignIn) {
+      //signup
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+        })
+        .catch((error) => {
+          //const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorMessage)
+        });
+    } else {
+      signInWithEmailAndPassword(auth,email.current.value,password.current.value)
+      .then((userCredential) =>{
+        console.log("signedIn",userCredential.user)
+      })
+      .catch((error)=>{
+        setErrorMessage(error.errorCode+error.errorMessage)
+        
+      })
+    }
+  };
+
   return (
     <div className="">
       <Header />
@@ -16,22 +61,47 @@ const Login = () => {
 "
           alt="background-img"
         />
-          <form className=" text-white w-3/12 m-10 p-10 bg-black absolute z-10 my-36 mx-auto right-0 left-0 bg-opacity-80">
-            <h1 className="text-3xl font-bold py-4">{isSignIn? "Sign In" : "Sign Up"}</h1>
-            {!isSignIn && <input
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className=" text-white w-3/12 m-10 p-10 bg-black absolute z-10 my-36 mx-auto right-0 left-0 bg-opacity-80"
+        >
+          <h1 className="text-3xl font-bold py-4">
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </h1>
+          {!isSignIn && (
+            <input
+              ref={fullName}
               type="text"
               placeholder="Full Name"
-              className="p-4 my-4 w-full rounded-lg bg-gray-200"
-            />}
-            <input
-              type="text"
-              placeholder="Email address or phone number"
-              className="p-4 my-4 w-full rounded-lg bg-gray-200"
+              className="p-4 my-4 w-full rounded-lg bg-gray-200 text-black"
             />
-            <input type="password" placeholder="password" className="p-4 my-4 w-full rounded-lg bg-gray-200" />
-            <button className="my-2 p-2 bg-red-700 w-full rounded-lg">{isSignIn? "Sign In" : "Sign Up"}</button>
-            <p className="py-4 underline cursor-pointer" onClick={handleSignup}> {isSignIn? "New to Netflix? Sign Up Now" : "Already a user ? Sign In Now"} </p>
-          </form>
+          )}
+          <input
+            ref={email}
+            type="text"
+            placeholder="Email address or phone number"
+            className="p-4 my-4 w-full rounded-lg bg-gray-200 text-black"
+          />
+          <input
+            ref={password}
+            type="password"
+            placeholder="password"
+            className="p-4 my-4 w-full rounded-lg bg-gray-200 text-black"
+          />
+          <p className="text-red-600">{errorMessage}</p>
+          <button
+            onClick={signInClicked}
+            className="my-2 p-2 bg-red-700 w-full rounded-lg"
+          >
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </button>
+          <p className="py-4 underline cursor-pointer" onClick={handleSignup}>
+            {" "}
+            {isSignIn
+              ? "New to Netflix? Sign Up Now"
+              : "Already a user ? Sign In Now"}{" "}
+          </p>
+        </form>
       </div>
     </div>
   );
