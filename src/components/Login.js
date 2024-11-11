@@ -42,7 +42,6 @@ const Login = () => {
     } else {
       signInWithEmailAndPassword(auth,email.current.value,password.current.value)
       .then((userCredential) =>{
-        console.log("signedIn",userCredential.user)
       })
       .catch((error)=>{
         setErrorMessage(error.errorCode+error.errorMessage)
@@ -56,14 +55,14 @@ const Login = () => {
       <Header />
       <div className="relative">
         <img
-          className="absolute"
+          className="absolute h-screen object-cover w-full"
           src="https://assets.nflxext.com/ffe/siteui/vlv3/bfc0fc46-24f6-4d70-85b3-7799315c01dd/web/CA-en-20240923-TRIFECTA-perspective_203cfc5e-4e7e-44d2-9d3b-b5220419cbd6_large.jpg
 "
           alt="background-img"
         />
         <form
           onSubmit={(e) => e.preventDefault()}
-          className=" text-white w-3/12 m-10 p-10 bg-black absolute z-10 my-36 mx-auto right-0 left-0 bg-opacity-80"
+          className=" text-white w-full md:w-3/12 m-10 p-10 bg-black absolute z-10 my-36 mx-auto right-0 left-0 bg-opacity-50"
         >
           <h1 className="text-3xl font-bold py-4">
             {isSignIn ? "Sign In" : "Sign Up"}

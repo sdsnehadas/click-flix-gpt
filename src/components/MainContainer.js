@@ -3,12 +3,11 @@ import VideoBackground from "./VideoBackground";
 
 const MainContainer = ({nowPlayingMovies}) =>{
 
-    console.log("movies in main", nowPlayingMovies, nowPlayingMovies[0])
     if (!nowPlayingMovies) return;
-    const mainMovie = nowPlayingMovies[0];
+    const mainMovie = nowPlayingMovies[2];
     const {original_title, overview, id} = mainMovie;
     return (
-        <div>
+        <div className="pt-[40%] md:pt-0">
             <VideoTitle title={original_title} overview={overview}/>
             <VideoBackground movieId={id}/>
         </div>
